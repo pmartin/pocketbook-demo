@@ -35,4 +35,4 @@ demo01.app: ELF 32-bit LSB executable, ARM, EABI5 version 1 (SYSV), dynamically 
 
 Essayons de mettre ça dans le répertoire `applications/` d'une liseuse, puis de le lancer, et on verra ^^
 
-=> Success \o/
+![Succès : un affichage à l'écran](http://extern.pascal-martin.fr/pocketbook-demo/demo01-ibAbNojyij9.jpg)
