@@ -12,6 +12,11 @@ Il faudra également pouvoir lancer `gdbserver` sur la liseuse. Par exemple :
 
  * en ayant un serveur telnet ou ssh sur la liseuse
  * ou via un terminal comme `pbterm` (ce que j'ai fais ci-dessous)
+ * ou via un rapide script qui lance la bonne commande, cf `gdbserver-demo02.app`
+
+Attention : dans le dernier cas (le plus pratique à lancer), lors de son lancement, l'application reste colorée dans
+le tiroir d'applications, donnant l'impression qu'il ne se passe rien au départ. Une fois le deboggage terminé, utiliser
+la commande `kill` de `dbg` fermera le tout.
 
 
 # Compilation
