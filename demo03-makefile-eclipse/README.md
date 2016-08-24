@@ -69,26 +69,23 @@ Création de la configuration de debug, sous Eclipse :
 
  * `Run` > `Debug Configurations...`
  * Clic droit sur `C/C++ Remote Application` > `New`
+ * Configurer (en bas) : `Using GDB (DSF) Manual Remote Debugging Launcher`
  * Onglet `Main` :
 
     * `Project` : `demo03-makefile-eclipse`
     * `C/C++ Application` : `demo03.app`
-    * `Connection` : Local`
-    * `Remote Absolute File Path for C/C++ Application` : `/mnt/ext1/applications/demo03.app`
-    * Cocher : `Skip download to target path`
 
  * Onglet `Debugger` :
 
     * `Main` :
 
-       * `GDB debugger` : `/home/squale/developpement/PBSDK/bin/arm-obreey-linux-gnueabi-gdb`
+       * `GDB debugger` : `/home/pmartin/developpement/PBSDK/bin/arm-obreey-linux-gnueabi-gdb`
        * `GDB commande file` : `.gdbinit`
 
     * `Shared Libraries` :
 
        * Ajouter : `/home/pmartin/developpement/PBSDK/arm-obreey-linux-gnueabi/sysroot/usr/local/lib`
 
-    * Configurer (en bas) : `Using GDB (DSF) Manual Remote Debugging Launcher`
     * `Connection` :
 
        * `Type : `TCP`
