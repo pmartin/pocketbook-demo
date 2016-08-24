@@ -33,6 +33,8 @@ static void http_request_01(void)
 	log_message("Contenu de la réponse :");
 	strncpy(buffer, (char *)result, fmax(sizeof(buffer) - 1, retsize));
 	log_message(buffer);
+
+	free(result);
 }
 
 
