@@ -15,3 +15,8 @@ Si le wifi est désactivé, la liseuse affiche automatiquement la boite de dialo
 de se connecter \o/
 
 A voir : que se passe-t-il si l'utilisateur annule la connexion ?
+
+
+# Configuration Eclipse
+
+Pour `curl` : ajouter `${PBSDK}/arm-obreey-linux-gnueabi/sysroot/usr/include` aux répertoires d'includes.
