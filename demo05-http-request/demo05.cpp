@@ -1,4 +1,5 @@
 #include "inkview.h"
+#include "curl/curl.h"
 #include <math.h>
 
 static ifont *font;
@@ -129,6 +130,69 @@ static void http_request_02()
 }
 
 
+
+static size_t curl_03_header_callback(char *ptr, size_t size, size_t nitems, void *userdata)
+{
+	char buffer[1024];
+
+	int data_size = size * nitems;
+	snprintf(buffer, sizeof(buffer), "  Header : %d bytes : %.128s", data_size, ptr);
+	log_message(buffer);
+
+	return data_size;
+}
+
+static size_t curl_03_write_callback(char *ptr, size_t size, size_t nmemb, void *userdata)
+{
+	// Attention : la donnée reçue n'est pas \0-terminated
+	char buffer[1024];
+
+	int data_size = size * nmemb;
+	snprintf(buffer, sizeof(buffer), "  Data %d bytes : %.128s", data_size, ptr);
+	log_message(buffer);
+
+	// Même si on n'a pas tout affiché, on indique qu'on a tout géré
+	return data_size;
+}
+
+static void http_request_03()
+{
+	char buffer[2048];
+
+	log_message("Début troisième essai (curl).");
+
+	CURL *curl = curl_easy_init();
+	if (!curl) {
+		log_message("Echec initialisation curl");
+		return;
+	}
+
+	//const char *url = "http://checkip.amazonaws.com/";
+	const char *url = "https://blog.pascal-martin.fr/post/directives-ini-c-est-le-mal.html";
+	//const char *url = "http://bit.ly/2bPtNry";
+
+	curl_easy_setopt(curl, CURLOPT_URL, url);
+	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
+
+	curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, curl_03_header_callback);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_03_write_callback);
+
+	CURLcode res = curl_easy_perform(curl);
+	if (res != CURLE_OK) {
+		sprintf(buffer, "Erreur %d : %s", res, curl_easy_strerror(res));
+		log_message(buffer);
+
+		goto end;
+	}
+
+	end:
+	curl_easy_cleanup(curl);
+
+	log_message("Fin troisième essai (curl).");
+}
+
+
 static int main_handler(int event_type, int param_one, int param_two)
 {
 	if (EVT_INIT == event_type) {
@@ -143,6 +207,7 @@ static int main_handler(int event_type, int param_one, int param_two)
     	log_message("Lancement de l'application...");
     	http_request_01();
     	http_request_02();
+    	http_request_03();
     	log_message("Fin du programme.");
 
     	FullUpdate();
