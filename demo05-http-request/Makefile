@@ -7,7 +7,7 @@ CFLAGS = -Wall -Wextra -Wvla -Wmissing-field-initializers -Wshadow -Wno-unused-p
 all: demo05.app
 
 demo05.app: demo05.cpp
-	$(CC) demo05.cpp $(CFLAGS) -o demo05.app -linkview -g -gdwarf-3
+	$(CC) demo05.cpp $(CFLAGS) -o demo05.app -linkview -lcurl -g -gdwarf-3
 
 clean:
 	rm -f demo05.app
