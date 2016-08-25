@@ -83,7 +83,7 @@ static void http_request_02()
 	//    - ou l'URL du redirect (qui n'est pas suivi !) si le statut est 301
 	int i = 0;
 	while (i<5000 && session_status >= 0 && sinf->response == 0) {
-		if (i%50 == 0) {
+		if (i%250 == 0) {
 			sprintf(buffer, "  Waiting... #%d ; settion_status=%d ; sinf->response=%ld ; length=%d ; progress=%d", i, session_status, sinf->response, sinf->length, sinf->progress);
 			log_message(buffer);
 		}
