@@ -2,6 +2,9 @@
 
 LOCAL_PORT=10003
 
+echo "Activating wifi"
+/mnt/ext1/applications/devutils.app 'wifi:activate'
+
 echo "Listening on :10003 for application name"
 LOCAL_APP_NAME=$(nc -l -p "$LOCAL_PORT" | tr -d ' ')
 echo "Received application name : '$LOCAL_APP_NAME'"
