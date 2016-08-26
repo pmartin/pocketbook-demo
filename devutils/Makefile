@@ -6,8 +6,8 @@ CFLAGS = -Wall -Wextra -Wvla -Wmissing-field-initializers -Wshadow -Wno-unused-p
 
 all: devutils.app
 
-devutils.app: devutils.cpp
-	$(CC) devutils.cpp $(CFLAGS) -o devutils.app -linkview -g -gdwarf-3
+devutils.app: devutils.cpp devutils.h wifi.cpp
+	$(CC) devutils.cpp wifi.cpp $(CFLAGS) -o devutils.app -linkview -g -gdwarf-3
 
 clean:
 	rm -f devutils.app

@@ -1,6 +1,4 @@
-#include "inkview.h"
-#include "inkinternal.h"
-#include <math.h>
+#include "devutils.h"
 
 
 static int g_argc;
@@ -38,42 +36,7 @@ static void log_message(const char *msg)
 }
 
 
-static int wifi_activate()
-{
-	iv_netinfo *netinfo = NetInfo();
-	if (netinfo->connected) {
-		// Already connected => nothing more to do
-		return 0;
-	}
 
-	const char *network_name = NULL;
-	int result = NetConnect2(network_name, 1);
-	if (result != 0) {
-		// Failed to connect
-		return 1;
-	}
-
-	// Just to be sure: check if we are, now, connected
-	netinfo = NetInfo();
-	if (netinfo->connected) {
-		return 0;
-	}
-
-	// Connection failed, I don't know why
-	return 2;
-}
-
-
-static int wifi_deactivate()
-{
-	iv_netinfo *netinfo = NetInfo();
-	if (!netinfo->connected) {
-		// Already not connected => nothing to do
-		return 0;
-	}
-
-	return NetDisconnect();
-}
 
 
 static int main_handler(int event_type, int param_one, int param_two)
