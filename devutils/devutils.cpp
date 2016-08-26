@@ -2,6 +2,11 @@
 #include "inkinternal.h"
 #include <math.h>
 
+
+static int g_argc;
+static char **g_argv;
+
+
 static ifont *font;
 static const int kFontSize = 15;
 static int y_log;
@@ -90,6 +95,9 @@ static int main_handler(int event_type, int param_one, int param_two)
 
 int main (int argc, char* argv[])
 {
+	g_argc = argc;
+	g_argv = argv;
+
     InkViewMain(main_handler);
     return 0;
 }
