@@ -109,6 +109,19 @@ static int wifi_activate()
 	return 2;
 }
 
+
+static int wifi_deactivate()
+{
+	iv_netinfo *netinfo = NetInfo();
+	if (!netinfo->connected) {
+		// Already not connected => nothing to do
+		return 0;
+	}
+
+	return NetDisconnect();
+}
+
+
 static int main_handler(int event_type, int param_one, int param_two)
 {
 	if (EVT_INIT == event_type) {
@@ -125,6 +138,10 @@ static int main_handler(int event_type, int param_one, int param_two)
 
 		if (iv_strcmp(command, "wifi:activate") == 0) {
 			wifi_activate();
+			CloseApp();
+		}
+		else if (iv_strcmp(command, "wifi:deactivate") == 0) {
+			wifi_deactivate();
 			CloseApp();
 		}
 		else {
