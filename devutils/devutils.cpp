@@ -38,52 +38,6 @@ static void log_message(const char *msg)
 }
 
 
-static void test_network()
-{
-	char buffer[2048];
-
-	snprintf(buffer, 2048, "hw_wifi_status = %d", hw_wifi_status());
-	log_message(buffer);
-
-	snprintf(buffer, 2048, "QueryNetwork = %d", QueryNetwork());
-	log_message(buffer);
-
-	// Pour forcer la déconnexion (ça aide à tester la connexion ensuite)
-	snprintf(buffer, 2048, "NetDisconnect = %d", NetDisconnect());
-	log_message(buffer);
-
-	iv_netinfo *netinfo = NetInfo();
-	if (netinfo->connected) {
-		snprintf(buffer, 2048, "Connecté au réseau : %s", netinfo->name);
-		log_message(buffer);
-	}
-	else {
-		log_message("Non connecté => connexion");
-
-		// Je pense que si on on met NULL comme nom de réseau, la liseuse se connecte à celui "par défaut"
-		//const char *network_name = "TEA-GUEST";
-		const char *network_name = NULL;
-		int result = NetConnect2(network_name, 1);
-
-		snprintf(buffer, 2048, "Resultat connexion : %d", result);
-		log_message(buffer);
-
-		netinfo = NetInfo();
-		if (netinfo->connected) {
-			snprintf(buffer, 2048, "Connecté au réseau : %s", netinfo->name);
-			log_message(buffer);
-		}
-		else {
-			log_message("Toujours pas connecté ;-(");
-		}
-	}
-
-	network_interface_info *nii = GetNetInfo(NULL);
-	snprintf(buffer, 2048, "IP : %s / %s ; br = %s ; hw = %s", nii->ip_addr.addr, nii->mask.addr, nii->br_addr.addr, nii->hw_addr.hw_addr);
-	log_message(buffer);
-}
-
-
 static int wifi_activate()
 {
 	iv_netinfo *netinfo = NetInfo();
