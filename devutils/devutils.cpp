@@ -11,6 +11,25 @@ static ifont *font;
 static const int kFontSize = 15;
 static int y_log;
 
+static void start_logging()
+{
+	font = OpenFont("LiberationSans", kFontSize, 0);
+	SetFont(font, BLACK);
+
+	ClearScreen();
+	FullUpdate();
+
+	y_log = 0;
+}
+
+
+static void end_logging()
+{
+	FullUpdate();
+	CloseFont(font);
+}
+
+
 static void log_message(const char *msg)
 {
 	DrawTextRect(0, y_log, ScreenWidth(), kFontSize, msg, ALIGN_LEFT);
