@@ -84,27 +84,60 @@ static void test_network()
 }
 
 
+static int wifi_activate()
+{
+	iv_netinfo *netinfo = NetInfo();
+	if (netinfo->connected) {
+		// Already connected => nothing more to do
+		return 0;
+	}
+
+	const char *network_name = NULL;
+	int result = NetConnect2(network_name, 1);
+	if (result != 0) {
+		// Failed to connect
+		return 1;
+	}
+
+	// Just to be sure: check if we are, now, connected
+	netinfo = NetInfo();
+	if (netinfo->connected) {
+		return 0;
+	}
+
+	// Connection failed, I don't know why
+	return 2;
+}
+
 static int main_handler(int event_type, int param_one, int param_two)
 {
 	if (EVT_INIT == event_type) {
-    	font = OpenFont("LiberationSans", kFontSize, 0);
-    	SetFont(font, BLACK);
+		if (g_argc <= 1) {
+			start_logging();
+			log_message("No command specified");
+			log_message("Usage: devutils.app 'command'");
+			log_message("Press a key, any key, to exit ;-)");
+			end_logging();
+			return 0;
+    	}
 
-    	ClearScreen();
-    	FullUpdate();
+		char *command = g_argv[1];
 
-    	y_log = 0;
+		if (iv_strcmp(command, "wifi:activate") == 0) {
+			wifi_activate();
+			CloseApp();
+		}
+		else {
+			start_logging();
 
-    	log_message("Lancement de l'application...");
+			char buffer[2048];
+			snprintf(buffer, 2048, "Unknown command '%s'", command);
+			log_message(buffer);
 
-    	test_network();
-
-    	log_message("Fin du programme.");
-
-    	FullUpdate();
+			end_logging();
+		}
     }
     else if (EVT_KEYPRESS == event_type) {
-    	CloseFont(font);
         CloseApp();
     }
 
