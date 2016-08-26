@@ -21,11 +21,11 @@ The following commands are recognized.
 To activate wifi :
 
 ```
-devutils wifi:activate
+devutils.app wifi:activate
 ```
 
 To deactivate wifi :
 
 ```
-devutils wifi:deactivate
+devutils.app wifi:deactivate
 ```
