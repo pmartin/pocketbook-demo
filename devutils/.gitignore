@@ -1,0 +1,6 @@
+devutils.app
+
+# Eclipse files
+/.settings/
+/.cproject
+/.project
