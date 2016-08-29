@@ -33,6 +33,24 @@ static void ui_dialog_01()
 }
 
 
+static void menu_01_handler(int index)
+{
+	char buffer[2048];
+	snprintf(buffer, 2048, "Menu: index %d has been selected!", index);
+	Message(ICON_INFORMATION, "Debug", buffer, 3*1000);
+}
+
+static void menu_01()
+{
+	struct imenu_s submenu3 = {.type = 3, .index = 3, .text = (char *)"Text of entry 3 (type=3)", .submenu = NULL};
+	struct imenu_s submenu2 = {.type = 2, .index = 2, .text = (char *)"Text of entry 2 (type=2)", .submenu = &submenu3};
+	struct imenu_s submenu1 = {.type = 1, .index = 1, .text = (char *)"Text of entry 1 (type=1)", .submenu = &submenu2};
+	imenu menu = {.type = 1, .index = 0, .text = (char *)"Text of menu (type=1)", .submenu = &submenu1};
+
+	OpenMenu(&menu, 0, 100, 200, (iv_menuhandler)menu_01_handler);
+}
+
+
 static int main_handler(int event_type, int param_one, int param_two)
 {
 	// 0 == événement non géré par l'application ; et sera donc géré par la liseuse
@@ -54,6 +72,7 @@ static int main_handler(int event_type, int param_one, int param_two)
 			return 1;
 		}
 		else if (param_one == KEY_NEXT) {
+			//*
 			if (step == 0) {
 				Message(ICON_INFORMATION, "Debug", "Key right!\n(message will disappear after a while...)", 3*1000);
 			}
@@ -63,9 +82,13 @@ static int main_handler(int event_type, int param_one, int param_two)
 			else if (step == 2) {
 				ui_dialog_01();
 			}
+			else if (step == 3) {
+				menu_01();
+			}
 			else {
 				CloseApp();
 			}
+			//*/
 
 			step++;
 			return 1;
