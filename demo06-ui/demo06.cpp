@@ -42,10 +42,10 @@ static void menu_01_handler(int index)
 
 static void menu_01()
 {
-	struct imenu_s submenu3 = {type: 3, index: 3, text: (char *)"Text of entry 3 (type=3)", submenu: NULL};
-	struct imenu_s submenu2 = {type: 2, index: 2, text: (char *)"Text of entry 2 (type=2)", submenu: &submenu3};
-	struct imenu_s submenu1 = {type: 1, index:1, text: (char *)"Text of entry 1 (type=1)", submenu: &submenu2};
-	imenu menu = {type: 1, index:0, text: (char *)"Text of menu (type=1)", submenu: &submenu1};
+	struct imenu_s submenu3 = {.type = 3, .index = 3, .text = (char *)"Text of entry 3 (type=3)", .submenu = NULL};
+	struct imenu_s submenu2 = {.type = 2, .index = 2, .text = (char *)"Text of entry 2 (type=2)", .submenu = &submenu3};
+	struct imenu_s submenu1 = {.type = 1, .index = 1, .text = (char *)"Text of entry 1 (type=1)", .submenu = &submenu2};
+	imenu menu = {.type = 1, .index = 0, .text = (char *)"Text of menu (type=1)", .submenu = &submenu1};
 
 	OpenMenu(&menu, 0, 100, 200, (iv_menuhandler)menu_01_handler);
 }
