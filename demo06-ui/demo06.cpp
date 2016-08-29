@@ -64,12 +64,18 @@ static void context_menu_01()
 	menuex.font = font;
 	*/
 
-	imenu menu = {type: 0, index: 0, text: (char *)"1st menu item?", submenu: NULL};
+	struct imenu_s submenu3 = {.type = 3, .index = 3, .text = (char *)"Text of entry 3 (type=3)", .submenu = NULL};
+	struct imenu_s submenu2 = {.type = 2, .index = 2, .text = (char *)"Text of entry 2 (type=2)", .submenu = &submenu3};
+	struct imenu_s submenu1 = {.type = 1, .index = 1, .text = (char *)"Text of entry 1 (type=1)", .submenu = &submenu2};
+
+	// If type != 0 => it segfaults when calling OpenContextMenu()
+	// But type == 0 doesn't display the menu (doesn't segfault, but does pretty much nothing?)
+	imenu menu = {.type = 1, .index = 0, .text = (char *)"My menu?", .submenu = &submenu1};
 
 	icontext_menu_properties properties;
-	properties.font_normal = font;
-	properties.font_selected = font;
-	properties.font_disabled = font;
+	//properties.font_normal = font;
+	//properties.font_selected = font;
+	//properties.font_disabled = font;
 	// A voir : plein d'autres champs...
 
 
@@ -77,23 +83,20 @@ static void context_menu_01()
 	context_menu->hproc = (iv_menuhandler)menu_01_handler;
 
 	//context_menu->menuex = &menuex;
-	context_menu->menuex = NULL;
 	context_menu->menu = &menu;
 
-	//context_menu.pos_selected_item = 0;
-	//context_menu.pos_menu = 0;
-	//context_menu->properties = &properties;
-	//context_menu->active_element = 0;
-	//context_menu->enable_pointer = 1;
-	//context_menu->enable_aura = 1;
-	//context_menu->use_own_font = 0;
-	//context_menu->update_after_close = 0;
+	context_menu->pos_selected_item = GetMenuRect(&menu);
+	context_menu->pos_menu = GetMenuRect(&menu);
+	context_menu->properties = &properties;
+	context_menu->active_element = 0;
+	context_menu->enable_pointer = 1;
+	context_menu->enable_aura = 1;
+	context_menu->use_own_font = 0;
+	context_menu->update_after_close = 0;
 
 
 	OpenContextMenu(context_menu);
 	SetContextMenu(context_menu);
-
-	Message(ICON_INFORMATION, "Debug", "Menu ???", 3*1000);
 }
 
 
