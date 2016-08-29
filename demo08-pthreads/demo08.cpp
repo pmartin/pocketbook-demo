@@ -16,9 +16,65 @@ static void log_message(const char *msg)
 }
 
 
+
+static void *test01_start_routine_01(void *)
+{
+	char buffer[2048];
+
+	for (int i=0 ; i<5 ; i++) {
+		snprintf(buffer, 2048, " >> Thread n°%d -> %d / 5", 1, i);
+		log_message(buffer);
+		usleep(500*1000);
+	}
+
+	pthread_exit(NULL);
+}
+
+
+static void *test01_start_routine_02(void *)
+{
+	char buffer[2048];
+
+	for (int i=0 ; i<4 ; i++) {
+		snprintf(buffer, 2048, " >> Thread n°%d -> %d / 4", 2, i);
+		log_message(buffer);
+		usleep(400*1000);
+	}
+
+	pthread_exit(NULL);
+}
+
 static void test_threads_01()
 {
-	log_message("Hello, world!");
+	log_message("Lancement...");
+
+	pthread_t thread1;
+	pthread_attr_t *attr1 = NULL;
+	void *arg1 = NULL;
+
+	pthread_t thread2;
+	pthread_attr_t *attr2 = NULL;
+	void *arg2 = NULL;
+
+	log_message("Lancement thread n°1");
+	if (pthread_create(&thread1, attr1, test01_start_routine_01, arg1) == -1) {
+		log_message("Erreur lancement du thread n°1");
+		goto exit;
+	}
+
+	usleep(500*1000);
+
+	log_message("Lancement thread n°2");
+	if (pthread_create(&thread2, attr2, test01_start_routine_02, arg2) == -1) {
+		log_message("Erreur lancement du thread n°2");
+		goto exit;
+	}
+
+	pthread_join(thread1, NULL);
+	pthread_join(thread2, NULL);
+
+	exit:
+	log_message("Fin!");
 }
 
 
