@@ -1,18 +1,29 @@
 #include "inkview.h"
 
 
+pthread_mutex_t mutex_y_log;
+
 static ifont *font;
 static const int kFontSize = 16;
 static int y_log;
 
 static void log_message(const char *msg)
 {
+	int y;
+
+	// Si deux threads accèdent à y_log en même temps,
+	// deux lignes de logs risquent de se chevaucher
+	pthread_mutex_lock(&mutex_y_log);
+	y = y_log;
+	y_log += kFontSize + 2;
+	pthread_mutex_unlock(&mutex_y_log);
+
+
 	if (strlen(msg) == 0) {
 		return;
 	}
-	DrawTextRect(0, y_log, ScreenWidth(), kFontSize, msg, ALIGN_LEFT);
-	PartialUpdate(0, y_log, ScreenWidth(), y_log + kFontSize + 2);
-	y_log += kFontSize + 2;
+	DrawTextRect(0, y, ScreenWidth(), kFontSize, msg, ALIGN_LEFT);
+	PartialUpdate(0, y, ScreenWidth(), y + kFontSize + 2);
 }
 
 
@@ -56,6 +67,8 @@ static void test_threads_01()
 	pthread_attr_t *attr2 = NULL;
 	void *arg2 = NULL;
 
+	mutex_y_log = PTHREAD_MUTEX_INITIALIZER;
+
 	log_message("Lancement thread n°1");
 	if (pthread_create(&thread1, attr1, test01_start_routine_01, arg1) == -1) {
 		log_message("Erreur lancement du thread n°1");
@@ -72,6 +85,8 @@ static void test_threads_01()
 
 	pthread_join(thread1, NULL);
 	pthread_join(thread2, NULL);
+
+	pthread_mutex_destroy(&mutex_y_log);
 
 	exit:
 	log_message("Fin!");
