@@ -51,6 +51,53 @@ static void menu_01()
 }
 
 
+
+static void context_menu_01()
+{
+	/*
+	imenuex menuex;
+	menuex.type = 0;
+	menuex.index = 0;
+	menuex.text = "1st menu item?";
+	menuex.submenu = NULL;
+	menuex.icon = NULL;
+	menuex.font = font;
+	*/
+
+	imenu menu = {type: 0, index: 0, text: (char *)"1st menu item?", submenu: NULL};
+
+	icontext_menu_properties properties;
+	properties.font_normal = font;
+	properties.font_selected = font;
+	properties.font_disabled = font;
+	// A voir : plein d'autres champs...
+
+
+	icontext_menu *context_menu = CreateContextMenu("my_menu");
+	context_menu->hproc = (iv_menuhandler)menu_01_handler;
+
+	//context_menu->menuex = &menuex;
+	context_menu->menuex = NULL;
+	context_menu->menu = &menu;
+
+	//context_menu.pos_selected_item = 0;
+	//context_menu.pos_menu = 0;
+	//context_menu->properties = &properties;
+	//context_menu->active_element = 0;
+	//context_menu->enable_pointer = 1;
+	//context_menu->enable_aura = 1;
+	//context_menu->use_own_font = 0;
+	//context_menu->update_after_close = 0;
+
+
+	OpenContextMenu(context_menu);
+	SetContextMenu(context_menu);
+
+	Message(ICON_INFORMATION, "Debug", "Menu ???", 3*1000);
+}
+
+
+
 static int main_handler(int event_type, int param_one, int param_two)
 {
 	// 0 == événement non géré par l'application ; et sera donc géré par la liseuse
@@ -84,6 +131,9 @@ static int main_handler(int event_type, int param_one, int param_two)
 			}
 			else if (step == 3) {
 				menu_01();
+			}
+			else if (step == 4) {
+				context_menu_01();
 			}
 			else {
 				CloseApp();
