@@ -97,8 +97,8 @@ static void progressbar_01()
 
 static int main_handler(int event_type, int param_one, int param_two)
 {
-	// 0 == événement non géré par l'application ; et sera donc géré par la liseuse
-	// non-0 == événement géré par l'application ; et ne sera donc pas géré par la liseuse
+	// 0 == event not taken into account by the application. The ereader will deal with it.
+	// non-0 == the application has taken the event into account. It will not be dealt with by the ereader.
 	int result = 0;
 
 	static int step = 0;

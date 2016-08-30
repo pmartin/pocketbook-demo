@@ -11,8 +11,8 @@ static void log_message(const char *msg)
 {
 	int y;
 
-	// Si deux threads accèdent à y_log en même temps,
-	// deux lignes de logs risquent de se chevaucher
+	// If 2 threads access y_log at the same time,
+	// we risk having 2 log lines displayed at the same position
 	pthread_mutex_lock(&mutex_y_log);
 	y = y_log;
 	y_log += kFontSize + 2;
@@ -57,7 +57,7 @@ static void *test01_start_routine_02(void *)
 
 static void test_threads_01()
 {
-	log_message("Lancement...");
+	log_message(">> Start...");
 
 	pthread_t thread1;
 	pthread_attr_t *attr1 = NULL;
@@ -69,17 +69,17 @@ static void test_threads_01()
 
 	mutex_y_log = PTHREAD_MUTEX_INITIALIZER;
 
-	log_message("Lancement thread n°1");
+	log_message("Starting thread n°1");
 	if (pthread_create(&thread1, attr1, test01_start_routine_01, arg1) == -1) {
-		log_message("Erreur lancement du thread n°1");
+		log_message("Failed starting thread n°1");
 		goto exit;
 	}
 
 	usleep(500*1000);
 
-	log_message("Lancement thread n°2");
+	log_message("Starting thread n°2");
 	if (pthread_create(&thread2, attr2, test01_start_routine_02, arg2) == -1) {
-		log_message("Erreur lancement du thread n°2");
+		log_message("Failed starting thread n°2");
 		goto exit;
 	}
 
@@ -89,14 +89,12 @@ static void test_threads_01()
 	pthread_mutex_destroy(&mutex_y_log);
 
 	exit:
-	log_message("Fin!");
+	log_message("<< End!");
 }
 
 
 static int main_handler(int event_type, int param_one, int param_two)
 {
-	// 0 == événement non géré par l'application ; et sera donc géré par la liseuse
-	// non-0 == événement géré par l'application ; et ne sera donc pas géré par la liseuse
 	int result = 0;
 
 	static int step = 0;
