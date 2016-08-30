@@ -13,13 +13,13 @@ You should take a look at the first three demos in the following order:
  * `demo03-makefile-eclipse`: using a `Makefile` to build the application, and developping with an IDE
 
 Once you have completed these first steps, the order of the next demos is far less important, as they
-each focus on a specific point and should be relatively independant from each other.
+each focus on a specific point and should be relatively independent from each other.
 
 
 # Documents
 
-A `README.md` file in present in each demo directory, presenting the goals of the demo and sometimes
-giving some additionnal informations.
+A `README.md` file exists in each demo directory, presenting the goals of the demo and sometimes
+giving some additionnal information.
 
 For example, see `demo02-gdb/README.md` to learn how to remote-debug an application, or `demo03-makefile-eclipse/README.md`
 to see how to configure Eclipse for both development and remote-debugging.
