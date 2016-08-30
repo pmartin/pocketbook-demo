@@ -23,7 +23,7 @@ cd "$PBSDK"
 git checkout 5.12
 ```
 
-*Note: this is the SDK for firmware 5.x devices, like the Touch Lux 3 ereader.*
+*Note: this is the SDK for firmware 5.x devices, like the Touch Lux 3 ereader. For firmware 4.x devices, go to the end of the document.*
 
 Then, from the directory that contains our project's source-code, to compile the application:
 
@@ -45,3 +45,32 @@ Finally, to run the application, we need to transfert it to the ereader (using a
 in the `applications/` folder. It will then appear in the applications drawer, allowing us to run it.
 
 ![Success: we have something displayed on the screen!](http://extern.pascal-martin.fr/pocketbook-demo/demo01-ibAbNojyij9.jpg)
+
+## Firmware 4.x
+
+Just like Firmware 5.w, we recommend to store the path of the SDK in an environment variable:
+
+```
+export FRSCSDK="$HOME/developpement/pocketbook-sdk-fw4/FRSCSDK"
+```
+
+Get the SDK on this non-official repository :
+
+```
+git clone git@github.com:blchinezu/pocketbook-sdk.git ${HOME}/developpement/pocketbook-sdk-fw4
+```
+
+To compile the application:
+
+```
+${FRSCSDK}/bin/arm-none-linux-gnueabi-g++  ./demo01.cpp -o demo01.app -linkview
+```
+
+Verification:
+
+```
+file demo01.app
+demo01.app: ELF 32-bit LSB executable, ARM, EABI4 version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.3, for GNU/Linux 2.6.14, not stripped
+```
+
+Installation steps on the reader device are the same than the ones given for firmware 5.x.
