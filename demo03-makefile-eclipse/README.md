@@ -1,113 +1,117 @@
-Objectifs :
 
- * Compiler une application simple via un `Makefile`
- * Développer sous Eclipse (en réutilisant le `Makefile` pour compiler), avec auto-complétion + remote-debug en interface graphique
+Our goals for this demo:
 
-
-# Un Makefile
-
-Pour le principe des makefiles -> cf des docs / tutoriels.
-
-Ici, je fais au plus simple :
-
- * Une cible `all` qui builde `demo03.app`
- * `demo03.app` dépend de `demo03.cpp`
- * Une cible `clean` classique.
-
-L'intérêt du `Makefile`, ici : pouvoir compiler en CLI ou sous à peu près n'importe quel éditeur ou IDE, en fonction des préférences de chacun.
+ * Using a (simple) `Makefile` to compile our (simple) application
+ * Developping using Eclipse (re-using this `Makefile` to compile the app), with auto-complete + remote-debugging with a GUI
 
 
-# Un IDE : Eclipse
+# A first Makefile
 
-Il existe un paquet d'IDE qui feraient probablement un peu tous l'affaire ; je pars sur Eclipse en premier, que j'ai déjà utilisé plusieurs fois ces dernières années pour développer en C.
+The principles of makefiles is not explained here; if needed, you'll easily find a tutorial on the matter on the Internet.
 
-## Installation Eclipse
+Here, we have:
 
-Pour développer sous Eclipse et avoir l'auto-complétion et tout ça :
+ * A target `all`, building `demo03.app`
+ * `demo03.app` depends on `demo03.cpp`
+ * A typical `clean` target.
 
- * Télécharger l'installeur Eclipse depuis [son site](https://eclipse.org/downloads/)
- * Choisir d'installer "Eclipse IDE for C/C++ Developers"
+Using a `Makefile`, here, has one goal: we want to be able to compile from CLI or from pretty much
+any editor or IDE we might want to use, depending on each one's preferences.
 
 
-## Projet sous Eclipse
+# An IDE: Eclipse
 
-Ensuite, en ayant un répertoire source `demo03-makefile-eclipse` déjà existant, basé sur un `Makefile`, créer le projet Eclipse correspondant :
+There are many C++ IDEs we could use; here, I chose Eclipse (as I've already used it for other C/C++ projects these last couple of years).
+
+## Installing Eclipse
+
+To developp with Eclipse and have auto-complete and all:
+
+ * Download the installer from [its website](https://eclipse.org/downloads/)
+ * Install "Eclipse IDE for C/C++ Developers"
+
+
+## A project with Eclipse
+
+With an existing source directory called `demo03-makefile-eclipse` and using a `Makefile` to build the app,
+create the corresponding Eclipse project:
 
  * `File` > `New` > `Makefile Project with existing code`
- * Renseigner les champs de la boite de dialogue :
+ * Fill-in the following fields in the dialog box:
 
     * `Languages` : `C++`
     * `Toolchain` : `Cross GCC`
 
-Une fois le projet créé, Eclipse doit réussir à supprimer le binaire créé et à le re-compiler (via `make`, avec un `Makefile` qui fonctionnait déjà en ligne de commandes !) :
+Once the project has been created, Eclipse should be able to delete and re-create the binary, using
+`make`, with our `Makefile` that was already working in CLI:
 
  * `Project` > `Clean`
  * `Project` > `Build All`
 
-## Auto-complétion, connaissance des fonctions de la bibliothèque `ink`
+## Auto-complete and functions form `inkview.h`
 
-L'étape suivante est de configurer Eclipse pour qu'il trouve les fichiers d'en-têtes `.h` qu'on utilise, afin :
+Then, next step is to configure Eclipse so it finds the `.h` header files we are working with, so:
 
- * De ne pas avoir les 3/4 du code souligné en rouge à cause de fonctions / constantes / types non trouvés
- * Avoir de l'auto-complétion, du Ctrl+clic !
+ * We don't have 3/4 of our code underlined in red because of missing functions / constants / types
+ * We get auto-complete and Ctrl+click!
 
-Pour ça :
+We have to do the following configuration steps:
 
- * Clic droit sur le projet > `Properties`
+ * Right click on the project > `Properties`
  * `C/C++ General` > `Paths and Symbols` > `Includes` > `GNU C++` > `Add...`
- * Ajouter : `/home/squale/developpement/PBSDK/arm-obreey-linux-gnueabi/sysroot/usr/local/include` ou `${PBSDK}/arm-obreey-linux-gnueabi/sysroot/usr/local/include` si vous avez défini la variable d'environnement ;-)
- * Dès que vous aurez validé la boite de dialogue, toutes les erreurs de *fonctions inconnues* et similaires soulignées en rouge dans l'IDE devraient disparaitre \o/ Et vous aurez de l'auto-complétion \o/
+ * Add: `/home/squale/developpement/PBSDK/arm-obreey-linux-gnueabi/sysroot/usr/local/include` or `${PBSDK}/arm-obreey-linux-gnueabi/sysroot/usr/local/include` if you have set the *right* environment variable ;-)
+ * When you have confirmed everything in the dialog box, all *unknown function* and similar errors should disappear \o/ and you'll get auto-complete \o/
 
-**A VOIR** : il faudra possiblement faire pareil avec quelques autres répertoires d'includes ailleurs dans le SDK ; liste à compléter, donc, en fonction des découvertes futures !
+Note: you will probably have to repeat the same steps for other include directories in the SDK, when you include some other file.
 
 
-## Remote debug (en interface graphique sous Eclipse + exécution du code sur liseuse)
+## Remote debug (with graphical interface with Eclipse + running the code on an ereader)
 
-### Configuration de debug
+### Debug configuration
 
-Création de la configuration de debug, sous Eclipse :
+We have to create a debug configuration:
 
  * `Run` > `Debug Configurations...`
- * Clic droit sur `C/C++ Remote Application` > `New`
- * Configurer (en bas) : `Using GDB (DSF) Manual Remote Debugging Launcher`
- * Onglet `Main` :
+ * Right click on `C/C++ Remote Application` > `New`
+ * At the bottom of the dialog box, set: `Using GDB (DSF) Manual Remote Debugging Launcher`
+ * `Main` tab:
 
-    * `Project` : `demo03-makefile-eclipse`
-    * `C/C++ Application` : `demo03.app`
+    * `Project`: `demo03-makefile-eclipse`
+    * `C/C++ Application`: `demo03.app`
 
- * Onglet `Debugger` :
+ * `Debugger` tab:
 
-    * `Main` :
+    * `Main`:
 
-       * `GDB debugger` : `/home/pmartin/developpement/PBSDK/bin/arm-obreey-linux-gnueabi-gdb`
-       * `GDB commande file` : `.gdbinit`
+       * `GDB debugger`: `/home/pmartin/developpement/PBSDK/bin/arm-obreey-linux-gnueabi-gdb` ← adapt this path
+       * `GDB commande file`: `.gdbinit`
 
-    * `Shared Libraries` :
+    * `Shared Libraries`:
 
-       * Ajouter : `/home/pmartin/developpement/PBSDK/arm-obreey-linux-gnueabi/sysroot/usr/local/lib`
+       * Ajouter: `/home/pmartin/developpement/PBSDK/arm-obreey-linux-gnueabi/sysroot/usr/local/lib` ← adapt this path
 
-    * `Connection` :
+    * `Connection`:
 
-       * `Type : `TCP`
-       * `Host name or IP address` : `192.168.0.12`     <- l'IP de la liseuse
-       * `Port number` : `10002`    <- le même que celui utilisé pour lancer `gdbserver` sur la liseuse
+       * `Type`: `TCP`
+       * `Host name or IP address`: `192.168.0.12` ← IP address of your ereader
+       * `Port number`: `10002` ← the same you used to run `gdbserver` on the ereader
 
 
-### Lancement du déboggage
+### Starting a debug session
 
-Sur la liseuse, lancer `gdbserver`, sur votre application et le port spécifié dans Eclipse -- comme fait précédemment (cf `demo02-gdb`).
+On the ereader, run `gdbserver` on your application, with the same port as specified in Eclipse -- like we did before (see `demo02-gdb`).
 
-Depuis Eclipse : `Debug`
+In Eclipse: `Debug`
 
 
 ### Profit \o/
 
-![Screenshot d'Eclipse en session de deboggage](http://extern.pascal-martin.fr/pocketbook-demo/demo03-debug-eclipse-tafOveyfsiv2.png)
+![Screenshot of Eclipse while remote-debugging an ereader application](http://extern.pascal-martin.fr/pocketbook-demo/demo03-debug-eclipse-tafOveyfsiv2.png)
 
 
 ### Troubleshooting
 
-Astuce, si vous avez l'erreur suivante, vérifiez que la liseuse soit encore connectée au wifi !
+Hint: if you get the following error, make sure the ereader is still connected to your wiki!
 
 ```
 Error in final launch sequence
@@ -118,4 +122,4 @@ Error message from debugger back end:
 192.168.0.12:10002: Aucun chemin d'accès pour atteindre l'hôte cible.
 ```
 
-Elle se déconnecte généralement assez vite ;-)
+*To preserve battery, the ereader disconnects quite quickly ;-)*
