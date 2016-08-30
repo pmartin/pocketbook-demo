@@ -14,6 +14,7 @@ static void log_message(const char *msg)
 }
 
 
+// HTTP request + result stored in memory
 static void http_request_01(void)
 {
 	char buffer[2048];
@@ -28,10 +29,10 @@ static void http_request_01(void)
 
 	void *result = QuickDownloadExt(url, &retsize, 15, cookie, post);
 
-	sprintf(buffer, "Taille de la réponse : %d", retsize);
+	sprintf(buffer, "Response size: %d", retsize);
 	log_message(buffer);
 
-	log_message("Contenu de la réponse :");
+	log_message("Response content:");
 	strncpy(buffer, (char *)result, fmax(sizeof(buffer) - 1, retsize));
 	log_message(buffer);
 
@@ -39,15 +40,16 @@ static void http_request_01(void)
 }
 
 
-// Requête HTTP et download vers un fichier
+// HTTP request + result written to a file
 static void http_request_02()
 {
 	char buffer[2048];
 
 	int session = NewSession();
 
-	// On récupére toujours un pointeur vers le même espace
-	// Non initialisé par la liseuse au départ => on initialise à 0 pour identifier, plus tard, quand le download sera fini
+	// We always get a pointer to the same memory space.
+	// At first, it's not initialized by the ereader
+	// => We initialize to 0 so we can detect changes later on (esp. when download is finished)
 	iv_sessioninfo *sinf = GetSessionInfo(session);
 	sinf->response = 0;
 
@@ -56,32 +58,33 @@ static void http_request_02()
 	const char *postdata = NULL;
 	const char *filename = USERDATA TEMPDIR "/debug.log";
 
-	// Pour la forme, on efface le fichier avant que le download ne le (re-)crée
+	// Delete the file (if exists) before it's recreated while downloading
+	// (Makes it easier to debug: if the file is there later on, it's because of the download)
 	int result_unlink = iv_unlink(filename);
-	sprintf(buffer, "Suppression fichier %s => %d", filename, result_unlink);
+	sprintf(buffer, "Remove file %s => %d", filename, result_unlink);
 	log_message(buffer);
 
-	SetUserAgent(session, "Mon joli user-agent");
+	SetUserAgent(session, "My nice user-agent");
 
-	// On lance le download
+	// Start downloading!
 	int result_download = DownloadTo(session, url, postdata, filename, 15);
 	int session_status = GetSessionStatus(session);
 	sinf = GetSessionInfo(session);
 
-	// Polling tant que le download n'est pas fini.
-	// session_status : doit être un indicateur "download vraiment en cours ou pas"
-	//    - 0 au tout début du download
-	//    - passe à 2 pendant une partie du download
-	//    - vaut à nouveau 0 à la fin du download, si téléchargement effectué (que ce soit en 200 ou en 404 !) ; ou reste à 2 en fait ???
-	//    - reste à 2 si la requête part en 301
-	//    - passe à -21 si erreur de DNS
+	// Polling, as long as the download is not finished (with a counter for security)
+	// session_status : must be some kind of indicator "the download is really in progress or not"
+	//    - 0 at first, when the download begins
+	//    - 2 during part of the download
+	//    - back to 0 at the end of the download, if it did something (be it 200 or 404) ; or remains at 2 actually ???
+	//    - stays at 2 if the requests ends up with a 301
+	//    - goes to -21 when there is a DNS error
 	// sinf->response :
-	//    même si on avait initialisé à autre chose que 0,
-	//    la liseuse le bascule à 0 lorsque session_status passe à 2
-	//    Vaut le code statut HTTP, à la fin de la requête
+	//    even if initialized to something else than 0,
+	//    the ereader sets it to 0 when session_status goes to 2
+	//    Set to the HTTP status code, at the end of the request
 	// sinf->url :
-	//    - vaut l'URL en résultat de la requête : celle de la page chargée
-	//    - ou l'URL du redirect (qui n'est pas suivi !) si le statut est 301
+	//    - Set to the resulting URL: the URL of the loaded page
+	//    - or the redirect URL (which is not followed!) if HTTP status is 301
 	int i = 0;
 	while (i<5000 && session_status >= 0 && sinf->response == 0) {
 		if (i%250 == 0) {
@@ -89,8 +92,8 @@ static void http_request_02()
 			log_message(buffer);
 		}
 
-		// J'espérais que ça demande à la liseuse d'attendre un moment...
-		// Mais ça n'a pas l'air de faire grand chose ;-(
+		// I was hoping this would ask the ereader to wait for a bit...
+		// But it doesn't seem to be doing much ;-(
 		GoSleep(250, 1);
 
 		session_status = GetSessionStatus(session);
@@ -104,16 +107,16 @@ static void http_request_02()
 	sprintf(buffer, "Session #%d (status=%d) ; result_download=%d", session, session_status, result_download);
 	log_message(buffer);
 
-	// Espérons que ça rentre dans le buffer... sinon, buffer overflow ;-(
+	// Let's hope is fits in the buffer... Else, buffer overflow ;-(
 	sprintf(buffer, "Infos :: url=%s", sinf->url);
 	log_message(buffer);
 	sprintf(buffer, "Infos :: ctype=%s response=%ld length=%d progress=%d", sinf->ctype, sinf->response, sinf->length, sinf->progress);
 		log_message(buffer);
 
-	// On a fini avec le download !
+	// Yeah, we're done downloading!
 	CloseSession(session);
 
-	// Lecture du fichier résultat du download
+	// Read the file to which the downloaded page has been saved
 	log_message("Contenu du fichier créé par le download :");
 	FILE *fp = iv_fopen(filename, "rb");
 	if (fp) {
@@ -126,7 +129,7 @@ static void http_request_02()
 		iv_fclose(fp);
 	}
 
-	log_message("Fin second essai.");
+	log_message("End of 2nd try.");
 }
 
 
@@ -144,14 +147,14 @@ static size_t curl_03_header_callback(char *ptr, size_t size, size_t nitems, voi
 
 static size_t curl_03_write_callback(char *ptr, size_t size, size_t nmemb, void *userdata)
 {
-	// Attention : la donnée reçue n'est pas \0-terminated
+	// Warning: the received data it not NUL-terminated
 	char buffer[1024];
 
 	int data_size = size * nmemb;
 	snprintf(buffer, sizeof(buffer), "  Data %d bytes : %.128s", data_size, ptr);
 	log_message(buffer);
 
-	// Même si on n'a pas tout affiché, on indique qu'on a tout géré
+	// Even if we didn't display everything, we signal the system we used all received data
 	return data_size;
 }
 
@@ -159,11 +162,11 @@ static void http_request_03()
 {
 	char buffer[2048];
 
-	log_message("Début troisième essai (curl).");
+	log_message("Start 3rd try (curl).");
 
 	CURL *curl = curl_easy_init();
 	if (!curl) {
-		log_message("Echec initialisation curl");
+		log_message("Failed initializing curl");
 		return;
 	}
 
@@ -180,7 +183,7 @@ static void http_request_03()
 
 	CURLcode res = curl_easy_perform(curl);
 	if (res != CURLE_OK) {
-		sprintf(buffer, "Erreur %d : %s", res, curl_easy_strerror(res));
+		sprintf(buffer, "Error %d : %s", res, curl_easy_strerror(res));
 		log_message(buffer);
 
 		goto end;
@@ -189,7 +192,7 @@ static void http_request_03()
 	end:
 	curl_easy_cleanup(curl);
 
-	log_message("Fin troisième essai (curl).");
+	log_message("End 3rd try (curl).");
 }
 
 
@@ -204,11 +207,11 @@ static int main_handler(int event_type, int param_one, int param_two)
 
     	y_log = 0;
 
-    	log_message("Lancement de l'application...");
+    	log_message("Starting application...");
     	http_request_01();
     	http_request_02();
     	http_request_03();
-    	log_message("Fin du programme.");
+    	log_message("End of application.");
 
     	FullUpdate();
     }
