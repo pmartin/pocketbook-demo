@@ -63,4 +63,4 @@ In any case, especially if you want to fix something: PRs are welcome!
 
 Also please note that, even if some commiters on this project work at [TEA, The Ebook Alternative](https://www.tea-ebook.com/),
 which sells Pocketbook ereader devices, the demos and docs in this repository have been written using a **public SDK**
-(exploring it, doing a lot of trial-and-error), with **absolutely no *insider-knownledge* at all**.
+(exploring it, doing a lot of trial-and-error), with **absolutely no *insider-knowledge* at all**.
