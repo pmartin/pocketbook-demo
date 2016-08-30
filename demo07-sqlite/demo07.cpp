@@ -96,8 +96,6 @@ static void database_01()
 
 static int main_handler(int event_type, int param_one, int param_two)
 {
-	// 0 == événement non géré par l'application ; et sera donc géré par la liseuse
-	// non-0 == événement géré par l'application ; et ne sera donc pas géré par la liseuse
 	int result = 0;
 
 	static int step = 0;
