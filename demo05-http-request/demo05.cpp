@@ -24,16 +24,16 @@ static void http_request_01(void)
 	char *cookie = NULL;
 	char *post = NULL;
 
-	sprintf(buffer, "HTTP Request to %s", url);
+	snprintf(buffer, 2048, "HTTP Request to %s", url);
 	log_message(buffer);
 
 	void *result = QuickDownloadExt(url, &retsize, 15, cookie, post);
 
-	sprintf(buffer, "Response size: %d", retsize);
+	snprintf(buffer, 2048, "Response size: %d", retsize);
 	log_message(buffer);
 
 	log_message("Response content:");
-	strncpy(buffer, (char *)result, fmax(sizeof(buffer) - 1, retsize));
+	snprintf(buffer, 2048, "Response content: %.1024s", (char *)result);
 	log_message(buffer);
 
 	free(result);
@@ -61,7 +61,7 @@ static void http_request_02()
 	// Delete the file (if exists) before it's recreated while downloading
 	// (Makes it easier to debug: if the file is there later on, it's because of the download)
 	int result_unlink = iv_unlink(filename);
-	sprintf(buffer, "Remove file %s => %d", filename, result_unlink);
+	snprintf(buffer, 2048, "Remove file %s => %d", filename, result_unlink);
 	log_message(buffer);
 
 	SetUserAgent(session, "My nice user-agent");
@@ -88,7 +88,7 @@ static void http_request_02()
 	int i = 0;
 	while (i<5000 && session_status >= 0 && sinf->response == 0) {
 		if (i%250 == 0) {
-			sprintf(buffer, "  Waiting... #%d ; settion_status=%d ; sinf->response=%ld ; length=%d ; progress=%d", i, session_status, sinf->response, sinf->length, sinf->progress);
+			snprintf(buffer, 2048, "  Waiting... #%d ; settion_status=%d ; sinf->response=%ld ; length=%d ; progress=%d", i, session_status, sinf->response, sinf->length, sinf->progress);
 			log_message(buffer);
 		}
 
@@ -104,13 +104,13 @@ static void http_request_02()
 	session_status = GetSessionStatus(session);
 	sinf = GetSessionInfo(session);
 
-	sprintf(buffer, "Session #%d (status=%d) ; result_download=%d", session, session_status, result_download);
+	snprintf(buffer, 2048, "Session #%d (status=%d) ; result_download=%d", session, session_status, result_download);
 	log_message(buffer);
 
 	// Let's hope is fits in the buffer... Else, buffer overflow ;-(
-	sprintf(buffer, "Infos :: url=%s", sinf->url);
+	snprintf(buffer, 2048, "Infos :: url=%s", sinf->url);
 	log_message(buffer);
-	sprintf(buffer, "Infos :: ctype=%s response=%ld length=%d progress=%d", sinf->ctype, sinf->response, sinf->length, sinf->progress);
+	snprintf(buffer, 2048, "Infos :: ctype=%s response=%ld length=%d progress=%d", sinf->ctype, sinf->response, sinf->length, sinf->progress);
 		log_message(buffer);
 
 	// Yeah, we're done downloading!
@@ -183,7 +183,7 @@ static void http_request_03()
 
 	CURLcode res = curl_easy_perform(curl);
 	if (res != CURLE_OK) {
-		sprintf(buffer, "Error %d : %s", res, curl_easy_strerror(res));
+		snprintf(buffer, 2048, "Error %d : %s", res, curl_easy_strerror(res));
 		log_message(buffer);
 
 		goto end;
