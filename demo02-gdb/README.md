@@ -1,50 +1,57 @@
 
-# Etapes préparatoires
+Goal: being able to remote-debug an application over wifi, running `gbd` on a computer while the
+application is executed on an ereader.
 
-On a besoin des outils de développement / déboggage sur la liseuse. Ils sont fournis avec le SDK, il faut
-les copier vers la liseuse :
+
+# Preparation steps, pre-requisites
+
+We need some development / debugging tools on the ereader. They are provided with the SDK and we must
+copy them to the ereader (pluggin it via USB):
 
 ```
 cp -R $PBSDK/arm-obreey-linux-gnueabi/debug-root/* /media/squale/TL\ TEA/system/
 ```
 
-Il faudra également pouvoir lancer `gdbserver` sur la liseuse. Par exemple :
+We will need to be able to run the `gdbserver` program on the ereader. For example, this can be done:
 
- * en ayant un serveur telnet ou ssh sur la liseuse
- * ou via un terminal comme `pbterm` (ce que j'ai fais ci-dessous)
- * ou via un rapide script qui lance la bonne commande, cf `gdbserver-demo02.app`
+ * using a telnet or ssh server on the ereader (I have not tested this yet, but it should work, if you can find/install such a server)
+ * or using a terminal application like `pbterm` (this is what's done below)
+ * or using a short script that launches the right command, see `gdbserver-demo02.app` (that's what I usually do)
 
-Attention : dans le dernier cas (le plus pratique à lancer), lors de son lancement, l'application reste colorée dans
-le tiroir d'applications, donnant l'impression qu'il ne se passe rien au départ. Une fois le deboggage terminé, utiliser
-la commande `kill` de `dbg` fermera le tout.
+Note: in the last case (the easiest to run), when you are starting it, the application will remain highlighted in
+the applications drawer, like if nothing was happening. Once debugging is finished, the `gdb` command `kill` will
+close everything just fine.
 
 
 # Compilation
+
+We add a couple of options to the compilation command we were using before:
 
 ```
 "$PBSDK/bin/arm-obreey-linux-gnueabi-g++" demo02.cpp -o demo02.app -linkview -g -gdwarf-3
 ```
 
-Options importantes :
+Notable options:
 
- * `-g` pour avoir les informations de déboggage
- * `-gdwarf-3` pour que la table de symboles soit dans un ancien format compris par la version de GDB utilisée
+ * `-g` to include debugging information in the generated executable
+ * `-gdwarf-3` so the generated symbol's table is in an old format understood by the old GDB version we are using
 
-Le binaire produit est *plus gros* que celui sans informations de débug ; il doit être déposé dans `applications/` de la liseuse.
-
-
-# Débogage
-
-Dans le principe :
-
- * On lance `gdbserver` sur la liseuse
- * On s'y connecte depuis `gdb` sur le PC
- * Le code est exécuté sur la liseuse, avec contrôle de l'exécution et du débogage depuis le PC.
+Note: the binary executable is *much bigger* than the one we would get without debugging informations. Like before,
+you have to transfert it to the `applications/` folder of your ereader.
 
 
-## Vérification sur le PC
+# Debugging
 
-Déjà, vérifions qu'on charge bien les libs :
+Basic idea:
+
+ * We run `gdbserver` on the ereader
+ * We connect to this server from `gdb` running on the computer
+ * The code is executed on the ereader, while the computer controls execution and debugging.
+
+
+## Preliminary checks (on the computer)
+
+First of all, let's check we are able to load the libraries properly:
 
 ```
 $PBSDK/bin/arm-obreey-linux-gnueabi-ldd --root $PBSDK/arm-obreey-linux-gnueabi/sysroot/usr/local/ demo02.app
@@ -68,28 +75,33 @@ $PBSDK/bin/arm-obreey-linux-gnueabi-ldd --root $PBSDK/arm-obreey-linux-gnueabi/s
         libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x8badf00d)
 ```
 
-=> ça devrait trouver les libs \o/
+⇒ This should find all the libraries we need \o/
 
 
-## Lancement gdbserveur sur la liseuse
+## Running `gdbserveur` on the ereader
 
-Lancer `gdbserver` sur la liseuse, une fois qu'elle est connectée au même réseau wifi que le PC :
+Run `gdbserver` on the ereader, which is connected to the same wifi network as the computer (or make sure you don't have a firewall that would block communications):
 
 ```
 /mnt/ext1/system/usr/bin/gdbserver 0.0.0.0:10002 /mnt/ext1/applications/demo02.app
 ```
 
-On devrait obtenir un affichage de ce type :
+You should get something like this displayed:
 
 ```
 Process /mnt/ext1/applications/demo02.app created; pid = 731
 Listening on port 10002
 ```
 
+Note: I used an application called `pbterm`, to get an interactive shell on the ereader:
 
-## Session de debug depuis le PC
+‣ [Software for PocketBook Touch (Lux) Ebook Readers](http://users.physik.fu-berlin.de/~jtt/PB/)
 
-Lancer gdb sur l'application (la même que celle sur la liseuse) :
+
+## Debbugging session, from the computer
+
+Run `gdb` on the application (the same `.app` file as the one running on the ereader via `gdbserver`),
+from the computer:
 
 ```
 $PBSDK/bin/arm-obreey-linux-gnueabi-gdb ./demo02.app
@@ -106,7 +118,7 @@ For bug reporting instructions, please see:
 Reading symbols from /home/pmartin/developpement/pocketbook-demo/demo02-gdb/demo02.app...done.
 ```
 
-Se connecter au serveur qui tourne sur la liseuse :
+And connect to the gdbserver on the ereader:
 
 ```
 (gdb) target remote 192.168.100.132:10002
@@ -116,7 +128,7 @@ Loaded symbols for /home/pmartin/developpement/PBSDK/arm-obreey-linux-gnueabi/sy
 0x40000bb0 in _start () from /home/pmartin/developpement/PBSDK/arm-obreey-linux-gnueabi/sysroot/lib/ld-linux.so.3
 ```
 
-Pour l'instant, on n'a pas trop de bibliothèques partagées accédées (vu que l'appli est tout juste lancée) :
+For now, as the application has just been started, we do not have that many shared libraries loaded:
 
 ```
 (gdb) info sharedlibrary
@@ -124,14 +136,14 @@ From        To          Syms Read   Shared Object Library
 0x400007a0  0x400160d4  Yes         /home/pmartin/developpement/PBSDK/arm-obreey-linux-gnueabi/sysroot/lib/ld-linux.so.3
 ```
 
-Positionnons un breakpoint au début de la fonction `test_debug()` qu'on veut débugguer :
+Let's set a breakpoint at the beginning of the `test_debug()` function, as it's the one we want to debug:
 
 ```
 (gdb) break test_debug
 Breakpoint 1 at 0x88d0
 ```
 
-Et avançons (on commence à avoir des sorties qui se plaignent) :
+And continue the execution of the application (we should started getting some output, complaining about missing symbols from some shared libraries):
 
 ```
 (gdb) continue
@@ -148,7 +160,8 @@ Program received signal SIGILL, Illegal instruction.
 0x404282e8 in ?? () from /home/pmartin/developpement/PBSDK/arm-obreey-linux-gnueabi/sysroot/usr/lib/libcrypto.so.1.0.0
 ```
 
-En effet, maintenant, il nous manque quelques infos de bibliothèques partagées :
+Indeed, we are missing informations from a few shared-libraries, including `libinkview.so` (which is quite important to us,
+as it's the one providing bindings to the ereader's specific features):
 
 ```
 (gdb) info sharedlibrary
@@ -179,7 +192,7 @@ From        To          Syms Read   Shared Object Library
 (*): Shared library is missing debugging information.
 ```
 
-Pour les charger :
+To load those missing symbols, we must tell gdb where to find the corresponding libaries on the computer (they are provided with the SDK):
 
 ```
 (gdb) set solib-search-path /home/pmartin/developpement/PBSDK/arm-obreey-linux-gnueabi/sysroot/usr/local/lib
@@ -216,7 +229,7 @@ From        To          Syms Read   Shared Object Library
 (*): Shared library is missing debugging information.
 ```
 
-Avançons un peu plus dans notre applications, pour arriver jusqu'à notre breakpoint :
+Let's move a bit forward in our application, jumping to the breakpoint we set earlier:
 
 ```
 (gdb) continue
@@ -226,7 +239,7 @@ Cannot access memory at address 0x0
 Breakpoint 1, 0x000088d0 in test_debug(ifont_s*, int, int) ()
 ```
 
-On en est où de la backtrace ?
+Here's the `backtrace`:
 
 ```
 (gdb) backtrace
@@ -239,7 +252,7 @@ Cannot access memory at address 0x15
 Backtrace stopped: previous frame identical to this frame (corrupt stack?)
 ```
 
-Et les arguments et variables ?
+And we can get informations about arguments and local variables:
 
 ```
 (gdb) info args
@@ -252,7 +265,7 @@ buffer = '\000' <repeats 44 times>"\220, \370\377\276\000\000\000\000\060\371\37
 result = 0
 ```
 
-Mettons un autre breakpoint quelques lignes plus loin et sautons-y :
+Now, let's set another breakpoint a few lines farther and jump to it:
 
 ```
 (gdb) break demo02.cpp:17
@@ -265,7 +278,7 @@ Breakpoint 3, test_debug (font=0x155128, a=1010, b=3) at demo02.cpp:17
 17          sprintf(buffer, "a=%d b=%d result=%d", a, b, result);
 ```
 
-Et les variables ont changé :
+As we can see, local variables have changed!
 
 ```
 (gdb) print a
@@ -275,7 +288,8 @@ $3 = 1010
 $4 = 3
 ```
 
-On peut même avancer ligne par ligne (et voir que l'écran se MAJ au fur et à mesure) :
+We can also run our program step-by-step (line-bu-line), and notice the screen on the ereader is
+updated as we go:
 
 ```
 (gdb) s
@@ -288,14 +302,14 @@ On peut même avancer ligne par ligne (et voir que l'écran se MAJ au fur et à 
 21          b *= 2;
 ```
 
-Donc : on peut débogguer \o/
+⇒ So, basically: we can debug \o/
 
 
-# Liens utiles
+# Useful links
 
-C'est du `dbg`, donc il peut être intéressant de connaitre les commandes de l'outil.
+We are using `dbg`, which means it might be interesting knowing a few commands of this tool ;-)
 
-Quelques liens en vrac :
+A few links that could be useful:
 
  * [GDB Command Reference](http://visualgdb.com/gdbreference/commands/)
  * [Continuing and Stepping](https://sourceware.org/gdb/onlinedocs/gdb/Continuing-and-Stepping.html)

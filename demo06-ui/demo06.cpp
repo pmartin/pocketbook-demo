@@ -181,10 +181,54 @@ static void context_menu_01()
 
 
 
+int progressbar_01_percent;
+
+static void progressbar_01_timer()
+{
+	char buffer[2048];
+
+	progressbar_01_percent += 5;
+	snprintf(buffer, 2048, "Progress is now %d%%", progressbar_01_percent);
+	UpdateProgressbar(buffer, progressbar_01_percent);
+
+	if (progressbar_01_percent < 100) {
+		SetWeakTimer("My 1st timer", progressbar_01_timer, 250);
+	}
+	else {
+		CloseProgressbar();
+	}
+}
+
+static void progressbar_01_handler(int button)
+{
+	char buffer[2048];
+
+	CloseProgressbar();
+
+	snprintf(buffer, 2048, "Progress: button %d has been selected!\nStopping progress!", button);
+	Message(ICON_INFORMATION, "Debug", buffer, 3*1000);
+}
+
+static void progressbar_01()
+{
+	const char *title = "Title of progress";
+	const char *text = "There is a lot of progress going on, here!";
+	progressbar_01_percent = 0;
+
+	OpenProgressbar(ICON_WARNING, title, text, progressbar_01_percent, progressbar_01_handler);
+
+	// Progressbar dialog is opened but non-blocking
+	// => use a timer to call a function in 250ms, to update the progress
+	// => kind-of simulating a background action taking some time to complete...
+	SetWeakTimer("My 1st timer", progressbar_01_timer, 250);
+}
+
+
+
 static int main_handler(int event_type, int param_one, int param_two)
 {
-	// 0 == événement non géré par l'application ; et sera donc géré par la liseuse
-	// non-0 == événement géré par l'application ; et ne sera donc pas géré par la liseuse
+	// 0 == event not taken into account by the application. The ereader will deal with it.
+	// non-0 == the application has taken the event into account. It will not be dealt with by the ereader.
 	int result = 0;
 
 	static int step = 0;
@@ -218,6 +262,9 @@ static int main_handler(int event_type, int param_one, int param_two)
 			}
 			else if (step == 4) {
 				context_menu_01();
+			}
+			else if (step == 5) {
+				progressbar_01();
 			}
 			else {
 				CloseApp();
