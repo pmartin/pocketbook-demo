@@ -8,24 +8,24 @@ static int test_debug(ifont *font, int a, int b)
     char buffer[1024];
     int result = 0;
 
-    sprintf(buffer, "a=%d b=%d result=%d", a, b, result);
+    snprintf(buffer, 1024, "a=%d b=%d result=%d", a, b, result);
     DrawTextRect(0, 0, ScreenWidth(), kFontSize, buffer, ALIGN_LEFT);
     FullUpdate();
 
     a += 10;
 
-    sprintf(buffer, "a=%d b=%d result=%d", a, b, result);
+    snprintf(buffer, 1024, "a=%d b=%d result=%d", a, b, result);
     DrawTextRect(0, 20, ScreenWidth(), kFontSize, buffer, ALIGN_LEFT);
     FullUpdate();
 
     b *= 2;
 
-    sprintf(buffer, "a=%d b=%d result=%d", a, b, result);
+    snprintf(buffer, 1024, "a=%d b=%d result=%d", a, b, result);
     DrawTextRect(0, 40, ScreenWidth(), kFontSize, buffer, ALIGN_LEFT);
     FullUpdate();
 
     result = a * b;
-    sprintf(buffer, "a=%d b=%d result=%d", a, b, result);
+    snprintf(buffer, 1024, "a=%d b=%d result=%d", a, b, result);
     DrawTextRect(0, 60, ScreenWidth(), kFontSize, buffer, ALIGN_LEFT);
     FullUpdate();
 }
