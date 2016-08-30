@@ -46,6 +46,43 @@ static void json_01()
 }
 
 
+// Serialize some C/C++ data structures to JSON
+static void json_02()
+{
+	log_message("Serializing C/C++ data structures to JSON...");
+
+	const char *json_string;
+	json_object *obj, *sub_obj1;
+
+	// Empty object: {}
+	obj = json_object_new_object();
+	json_string = json_object_to_json_string(obj);
+	free(obj);
+	log_message(json_string);
+	free((void *)json_string);
+
+	// Very simple object: {"my_int":123,"a_string":"Plop!"}
+	obj = json_object_new_object();
+	json_object_object_add(obj, "my_int", json_object_new_int(123));
+	json_object_object_add(obj, "a_string", json_object_new_string("Plop!"));
+	json_string = json_object_to_json_string(obj);
+	free(obj);
+	log_message(json_string);
+	free((void *)json_string);
+
+	// An array that contains an object and an integer: [{"key":"some val"},123456]
+	obj = json_object_new_array();
+	sub_obj1 = json_object_new_object();
+	json_object_object_add(sub_obj1, "key", json_object_new_string("some val"));
+	json_object_array_add(obj, sub_obj1);
+	json_object_array_add(obj, json_object_new_int(123456));
+	json_string = json_object_to_json_string(obj);
+	free(obj);
+	log_message(json_string);
+	free((void *)json_string);
+}
+
+
 static int main_handler(int event_type, int param_one, int param_two)
 {
 	int result = 0;
@@ -72,6 +109,9 @@ static int main_handler(int event_type, int param_one, int param_two)
 			//*
 			if (step == 0) {
 				json_01();
+			}
+			else if (step == 1) {
+				json_02();
 			}
 			else {
 				CloseApp();
