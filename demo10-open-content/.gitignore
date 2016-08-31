@@ -1,0 +1,6 @@
+demo10.app
+
+# Eclipse files
+/.settings/
+/.cproject
+/.project
