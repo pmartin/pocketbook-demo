@@ -83,6 +83,39 @@ static void json_02()
 }
 
 
+// A bit of error-handling + (basic) parsing with a tokener
+static void json_03_errors()
+{
+	log_message("Error-handling");
+
+	char buffer[2048];
+	const char *json_string;
+	json_object *obj;
+	json_tokener_error error;
+
+	// An invalid not-JSON-string (missing a quote before "plop")
+	// Error 4 -> unexpected character
+	json_string = "{\"a_string\":plop!\"}";
+	obj = json_tokener_parse_verbose(json_string, &error);
+	if (!obj) {
+		snprintf(buffer, 2048, "Error %d parsing '%s' -> %s", error, json_string, json_tokener_error_desc(error));
+		log_message(buffer);
+	}
+
+	// Another invalid not-JSON-string, parsing with a tokener
+	// Error 9 -> quoted object property name expected
+	json_tokener *tok = json_tokener_new();
+	json_string = "{this is not the sound }[of] JSON!";
+	obj = json_tokener_parse_ex(tok, json_string, strlen(json_string));
+	if (!obj) {
+		error = json_tokener_get_error(tok);
+		snprintf(buffer, 2048, "Error %d parsing '%s' -> %s", error, json_string, json_tokener_error_desc(error));
+		log_message(buffer);
+	}
+	json_tokener_free(tok);
+}
+
+
 static int main_handler(int event_type, int param_one, int param_two)
 {
 	int result = 0;
@@ -112,6 +145,9 @@ static int main_handler(int event_type, int param_one, int param_two)
 			}
 			else if (step == 1) {
 				json_02();
+			}
+			else if (step == 2) {
+				json_03_errors();
 			}
 			else {
 				CloseApp();
