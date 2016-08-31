@@ -7,7 +7,7 @@ static void ui_dialog_synchro_01()
 {
 	int result = DialogSynchro(ICON_QUESTION, "My Tile", "Content of the dialog", "1st button", "2nd button", NULL);
 	char buffer[2048];
-	snprintf(buffer, 2048, "Result of DialogSynchro() = %d", result);
+	snprintf(buffer, sizeof(buffer), "Result of DialogSynchro() = %d", result);
 	Message(ICON_INFORMATION, "Debug", buffer, 3*1000);
 }
 
@@ -15,7 +15,7 @@ static void ui_dialog_synchro_01()
 static void *ui_simple_dialog_handler(int button)
 {
 	char buffer[2048];
-	snprintf(buffer, 2048, "Dialog: button %d has been selected!", button);
+	snprintf(buffer, sizeof(buffer), "Dialog: button %d has been selected!", button);
 	Message(ICON_INFORMATION, "Debug", buffer, 3*1000);
 	return NULL;
 }
@@ -36,7 +36,7 @@ static void ui_dialog_01()
 static void menu_01_handler(int index)
 {
 	char buffer[2048];
-	snprintf(buffer, 2048, "Menu: index %d has been selected!", index);
+	snprintf(buffer, sizeof(buffer), "Menu: index %d has been selected!", index);
 	Message(ICON_INFORMATION, "Debug", buffer, 3*1000);
 }
 
@@ -59,7 +59,7 @@ static void progressbar_01_timer()
 	char buffer[2048];
 
 	progressbar_01_percent += 5;
-	snprintf(buffer, 2048, "Progress is now %d%%", progressbar_01_percent);
+	snprintf(buffer, sizeof(buffer), "Progress is now %d%%", progressbar_01_percent);
 	UpdateProgressbar(buffer, progressbar_01_percent);
 
 	if (progressbar_01_percent < 100) {
@@ -76,7 +76,7 @@ static void progressbar_01_handler(int button)
 
 	CloseProgressbar();
 
-	snprintf(buffer, 2048, "Progress: button %d has been selected!\nStopping progress!", button);
+	snprintf(buffer, sizeof(buffer), "Progress: button %d has been selected!\nStopping progress!", button);
 	Message(ICON_INFORMATION, "Debug", buffer, 3*1000);
 }
 

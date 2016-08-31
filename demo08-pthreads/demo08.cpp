@@ -33,7 +33,7 @@ static void *test01_start_routine_01(void *)
 	char buffer[2048];
 
 	for (int i=0 ; i<5 ; i++) {
-		snprintf(buffer, 2048, " >> Thread n°%d -> %d / 5", 1, i);
+		snprintf(buffer, sizeof(buffer), " >> Thread n°%d -> %d / 5", 1, i);
 		log_message(buffer);
 		usleep(500*1000);
 	}
@@ -47,7 +47,7 @@ static void *test01_start_routine_02(void *)
 	char buffer[2048];
 
 	for (int i=0 ; i<4 ; i++) {
-		snprintf(buffer, 2048, " >> Thread n°%d -> %d / 4", 2, i);
+		snprintf(buffer, sizeof(buffer), " >> Thread n°%d -> %d / 4", 2, i);
 		log_message(buffer);
 		usleep(400*1000);
 	}
