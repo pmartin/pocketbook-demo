@@ -1,5 +1,4 @@
 #include "inkview.h"
-#include "json-c/json.h"
 
 
 static ifont *font;
@@ -17,10 +16,41 @@ static void log_message(const char *msg)
 }
 
 
+// Opens the usual reader application, on our epub
+// To quit: same as usual: touch in top-left corner of the screen
+// Note: the EPUB is not added to "recent books" on the home-screen.
 static void test_01_epub()
 {
+	char buffer[1024];
 
+	const char *filepath = "/mnt/ext1/system/tmp/demo10/my-ebook.epub";
+	const char *parameters = "r";
+	int flags = 0;
+
+	snprintf(buffer, sizeof(buffer), "Opening %s...", filepath);
+	log_message(buffer);
+
+	OpenBook(filepath, parameters, flags);
 }
+
+
+// Opens the usual reader application, on our HTML file,
+// and it seems to work -- even if we don't have a full HTML document (only some content).
+// Note: remote content, such as images, are not downloaded / displayed
+static void test_02_html()
+{
+	char buffer[1024];
+
+	const char *filepath = "/mnt/ext1/system/tmp/demo10/my-page.html";
+	const char *parameters = "r";
+	int flags = 0;
+
+	snprintf(buffer, sizeof(buffer), "Opening %s...", filepath);
+	log_message(buffer);
+
+	OpenBook(filepath, parameters, flags);
+}
+
 
 
 static int main_handler(int event_type, int param_one, int param_two)
@@ -49,6 +79,9 @@ static int main_handler(int event_type, int param_one, int param_two)
 			//*
 			if (step == 0) {
 				test_01_epub();
+			}
+			else if (step == 1) {
+				test_02_html();
 			}
 			else {
 				CloseApp();
