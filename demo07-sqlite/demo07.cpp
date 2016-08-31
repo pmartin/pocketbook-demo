@@ -28,7 +28,7 @@ static int callback_01(void *not_used, int argc, char **argv, char **col_name){
 
 	strcpy(buffer, " > ");
 	for(int i=0; i<argc && i<5 ; i++) {
-		snprintf(row_buffer, 128, "%s=%s, ", col_name[i], argv[i] ? argv[i] : "NULL");
+		snprintf(row_buffer, sizeof(row_buffer), "%s=%s, ", col_name[i], argv[i] ? argv[i] : "NULL");
 		strcat(buffer, row_buffer);
 	}
 
@@ -52,7 +52,7 @@ static void database_01()
 
 	result = sqlite3_open(DB_FILE, &db);
 	if (result) {
-		snprintf(buffer, 2048, "Fail opening DB : %s", sqlite3_errmsg(db));
+		snprintf(buffer, sizeof(buffer), "Fail opening DB : %s", sqlite3_errmsg(db));
 		log_message(buffer);
 		goto exit;
 	}
@@ -60,7 +60,7 @@ static void database_01()
 	log_message("Create table...");
 	result = sqlite3_exec(db, "create table plop (id integer primary key, nom text)", callback_01, 0, &err_msg);
 	if (result != SQLITE_OK) {
-		snprintf(buffer, 2048, "Fail creating table : %s", err_msg);
+		snprintf(buffer, sizeof(buffer), "Fail creating table : %s", err_msg);
 		log_message(buffer);
 		goto exit;
 	}
@@ -68,14 +68,14 @@ static void database_01()
 	log_message("Insert(s)...");
 	result = sqlite3_exec(db, "insert into plop (id, nom) values (1, 'Pascal')", callback_01, 0, &err_msg);
 	if (result != SQLITE_OK) {
-		snprintf(buffer, 2048, "Fail inserting : %s", err_msg);
+		snprintf(buffer, sizeof(buffer), "Fail inserting : %s", err_msg);
 		log_message(buffer);
 		goto exit;
 	}
 
 	result = sqlite3_exec(db, "insert into plop (id, nom) values (2, 'John')", callback_01, 0, &err_msg);
 	if (result != SQLITE_OK) {
-		snprintf(buffer, 2048, "Fail inserting : %s", err_msg);
+		snprintf(buffer, sizeof(buffer), "Fail inserting : %s", err_msg);
 		log_message(buffer);
 		goto exit;
 	}
@@ -83,7 +83,7 @@ static void database_01()
 	log_message("Select...");
 	result = sqlite3_exec(db, "select * from plop", callback_01, 0, &err_msg);
 	if (result != SQLITE_OK) {
-		snprintf(buffer, 2048, "Fail selecting : %s", err_msg);
+		snprintf(buffer, sizeof(buffer), "Fail selecting : %s", err_msg);
 		log_message(buffer);
 		goto exit;
 	}

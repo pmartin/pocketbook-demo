@@ -27,17 +27,17 @@ static void json_01()
 
 	json_object *obj = json_tokener_parse(json_string);
 
-	snprintf(buffer, 2048, "type=%d (%s)", json_object_get_type(obj), json_type_to_name(json_object_get_type(obj)));
+	snprintf(buffer, sizeof(buffer), "type=%d (%s)", json_object_get_type(obj), json_type_to_name(json_object_get_type(obj)));
 	log_message(buffer);
 
 	if (json_object_get_type(obj) == json_type_object) {
 		json_object_object_foreach(obj, key, val) {
 			json_type type = json_object_get_type(val);
 			if (type == json_type_int) {
-				snprintf(buffer, 2048, "  > %s :: type=%d (%s) -> %d", key, type, json_type_to_name(type), json_object_get_int(val));
+				snprintf(buffer, sizeof(buffer), "  > %s :: type=%d (%s) -> %d", key, type, json_type_to_name(type), json_object_get_int(val));
 			}
 			else if (type == json_type_string) {
-				snprintf(buffer, 2048, "  > %s :: type=%d (%s) -> %s", key, type, json_type_to_name(type), json_object_get_string(val));
+				snprintf(buffer, sizeof(buffer), "  > %s :: type=%d (%s) -> %s", key, type, json_type_to_name(type), json_object_get_string(val));
 			}
 			// ... here, deal with the other types of data ; including array and object (recursive ;-) )
 			log_message(buffer);
@@ -98,7 +98,7 @@ static void json_03_errors()
 	json_string = "{\"a_string\":plop!\"}";
 	obj = json_tokener_parse_verbose(json_string, &error);
 	if (!obj) {
-		snprintf(buffer, 2048, "Error %d parsing '%s' -> %s", error, json_string, json_tokener_error_desc(error));
+		snprintf(buffer, sizeof(buffer), "Error %d parsing '%s' -> %s", error, json_string, json_tokener_error_desc(error));
 		log_message(buffer);
 	}
 
@@ -109,7 +109,7 @@ static void json_03_errors()
 	obj = json_tokener_parse_ex(tok, json_string, strlen(json_string));
 	if (!obj) {
 		error = json_tokener_get_error(tok);
-		snprintf(buffer, 2048, "Error %d parsing '%s' -> %s", error, json_string, json_tokener_error_desc(error));
+		snprintf(buffer, sizeof(buffer), "Error %d parsing '%s' -> %s", error, json_string, json_tokener_error_desc(error));
 		log_message(buffer);
 	}
 	json_tokener_free(tok);
