@@ -2,6 +2,8 @@
 Our goals for this demo:
 
  * Being able to parse some JSON string and extract the data it contains
+ * Serializing some C/C++ data structures to JSON strings
+ * Dealing with errors, especially during parsing
 
 
 # Resources
