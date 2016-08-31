@@ -52,6 +52,46 @@ static void test_02_html()
 }
 
 
+// Extract info about a couple of files
+// Too bad 2 of our books don't have covers :-(
+static void test_03_filetype()
+{
+	char buffer[1024];
+	const char *filepathes[] = {
+		"/mnt/ext1/system/tmp/demo10/my-ebook.epub",
+		"/mnt/ext1/system/tmp/demo10/my-page.html",
+		"/mnt/ext1/system/tmp/demo10/my-ebook-02.epub"
+	};
+	const char *filepath;
+	iv_filetype *type;
+	bookinfo *info;
+	ibitmap *cover;
+
+	for (int i=0 ; i<3 ; i++) {
+		filepath = filepathes[i];
+		snprintf(buffer, sizeof(buffer), "File %s :", filepath);
+		log_message(buffer);
+
+		type = FileType(filepath);
+		snprintf(buffer, sizeof(buffer), "  > type=%d ; extension=%s ; description=%s ; program=%s", type->type, type->extension, type->description, type->program);
+		log_message(buffer);
+
+		snprintf(buffer, sizeof(buffer), "  > Handler = %s", GetFileHandler(filepath));
+		log_message(buffer);
+
+		info = GetBookInfo(filepath);
+		snprintf(buffer, sizeof(buffer), "  > Title=%s ; author=%s ; size=%ld ; lang=%s ; identifiers=%s", info->title, info->author, info->size, info->lang, info->identifiers);
+		log_message(buffer);
+
+		cover = GetBookCover(filepath, 120, 120);
+		if (cover) {
+			DrawBitmap(50, y_log, cover);
+			PartialUpdate(50, y_log, cover->width, cover->height);
+			y_log += cover->height;
+		}
+	}
+}
+
 
 static int main_handler(int event_type, int param_one, int param_two)
 {
@@ -82,6 +122,9 @@ static int main_handler(int event_type, int param_one, int param_two)
 			}
 			else if (step == 1) {
 				test_02_html();
+			}
+			else if (step == 2) {
+				test_03_filetype();
 			}
 			else {
 				CloseApp();
