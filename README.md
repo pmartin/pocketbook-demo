@@ -58,7 +58,7 @@ Like *they* say:
 
 These demos and documents were written by people just like you: not-quite-perfect.
 Which means there might be mistakes, errors, things we did not quite understand…  
-Our hope is they can help some other developpers (maybe you?) write applications for their Pocketbook e-reader devices.
+Our hope is they can help some other developers (maybe you?) write applications for their Pocketbook e-reader devices.
 In any case, especially if you want to fix something: PRs are welcome!
 
 Also please note that, even if some commiters on this project work at [TEA, The Ebook Alternative](https://www.tea-ebook.com/),
